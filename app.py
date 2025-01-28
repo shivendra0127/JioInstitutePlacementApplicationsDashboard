@@ -24,7 +24,40 @@ if applied_companies:
 else:
     st.write(f"{student_name} has not applied to any companies.")
 
+# Filter by company
+st.header('Company-specific Stats')
+company_name = st.selectbox('Select a company', data.columns[2:])
+if company_name:
+    company_students = data[data[company_name] == 1]['Student_Name']
+    st.subheader(f"Students who applied to {company_name}")
+    st.write(f"Number of students applied: **{len(company_students)}**")
+    if not company_students.empty:
+        st.write(", ".join(company_students))
+    else:
+        st.write(f"No students have applied to {company_name}.")
+if company_name:
+    company_students = data[data[company_name] == 1]
+    program_distribution = company_students['Program'].value_counts()
 
+    st.subheader(f"Program-wise distribution for {company_name}")
+    options_program_donut = {
+        "chart": {},
+        "labels": program_distribution.index.tolist(),
+        "legend": {
+            "show": True,
+            "position": "bottom",
+        },
+    }
+
+    st_apexcharts(
+        options=options_program_donut,
+        series=program_distribution.tolist(),
+        types="donut",
+        width="125%",
+        title=f"Program-wise Distribution for {company_name}",
+    )
+
+        
 # Top 5 Companies Donut Chart
 st.header("Top 5 Companies with Most Applications")
 top_companies = company_counts.head(5)
